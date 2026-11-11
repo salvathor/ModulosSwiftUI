@@ -10,10 +10,20 @@
       "Base",
     ],
   },
+  "packages": [
+    {
+      "kind": "remote",
+      "repository": "https://github.com/onevcat/Kingfisher.git",
+      "version": {
+        "up-to-next-major-version": "8.15.0",
+      },
+    },
+  ],
   "files": [
     { "kind": "folder", "path": "ModulosSwiftUI", "target-membership": [ "ModulosSwiftUI" ] },
     { "kind": "folder", "path": "ModulosSwiftUITests", "target-membership": [ "ModulosSwiftUITests" ] },
     { "kind": "folder", "path": "ModulosSwiftUIUITests", "target-membership": [ "ModulosSwiftUIUITests" ] },
+    { "kind": "group", "name": "Frameworks" },
     {
       "kind": "group",
       "name": "Products",
@@ -34,6 +44,13 @@
         "compile-sources",
         "frameworks",
         "resources",
+      ],
+      "package-product-members": [
+        {
+          "package": "Kingfisher",
+          "product-name": "Kingfisher",
+          "build-phase": { "build-phase": "frameworks" },
+        },
       ],
       "build-settings": {
         "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",

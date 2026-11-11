@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct DetalleUsuarioView: View {
     
@@ -19,6 +20,9 @@ struct DetalleUsuarioView: View {
         Group{
             if let usuario = viewModel.usuario{
                 VStack{
+                    KFImage(URL(string: usuario.imagen)!)
+                        .resizable()
+                        .frame(width: 200,height: 200)
                     Image(systemName: "person.circle.fill")
                         .font(.system(size: 50))
                         .foregroundStyle(.blue)
