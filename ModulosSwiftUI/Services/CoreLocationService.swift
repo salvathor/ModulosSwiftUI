@@ -8,6 +8,24 @@
 import Foundation
 import CoreLocation
 
+enum LocationError: LocalizedError{
+    case serviciosDesactivados
+    case permisoDenegado
+    case solicitudEnCurso
+    case estadoDesconocido
+    case sistema(Error)
+    
+    var errorDescription: String? {
+        switch self {
+        case .serviciosDesactivados: return "Los servicios de ubicación estan desactivados."
+        case .permisoDenegado: return "No hay permisos para obtener la ubicación."
+        case .solicitudEnCurso: return "Ya existe una solicitud de ubicación en curso."
+        case .estadoDesconocido: return "Estado de autorización desconocido."
+        case .sistema(let error): return error.localizedDescription
+        }
+    }
+}
+
 @MainActor
 protocol LocationService {
     func solicitarUbicacion(completion: @escaping (Result<CLLocation, Error>) -> Void)
@@ -29,8 +47,23 @@ final class CoreLocationService: NSObject, LocationService{
     func solicitarUbicacion(completion: @escaping (Result<CLLocation, any Error>) -> Void) {
         self.completion = completion
         
-        manager.requestWhenInUseAuthorization()
-        manager.requestLocation()
+        //manager.requestWhenInUseAuthorization()
+        //manager.requestLocation()
+        
+        // Validar permisos del usuario
+        switch manager.authorizationStatus {
+        case .notDetermined:
+            manager.requestWhenInUseAuthorization() // Preguntar localizacion
+        case .authorizedWhenInUse, .authorizedAlways:
+            manager.requestLocation() // Solicitar localizacion
+        case .denied, .restricted:
+            completion(.failure(LocationError.permisoDenegado))
+            self.completion = nil
+        @unknown default:
+            completion(.failure(LocationError.estadoDesconocido))
+            self.completion = nil
+        }
+        
     }
     
 }
@@ -50,6 +83,21 @@ extension CoreLocationService:CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
         completion?(.failure(error))
         completion = nil
+    }
+    
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        guard completion != nil else {
+            return
+        }
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            manager.requestLocation()
+        case .denied, .restricted:
+            completion?(.failure(LocationError.permisoDenegado))
+            completion = nil
+        default:
+            break
+        }
     }
     
 }

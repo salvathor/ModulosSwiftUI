@@ -46,6 +46,10 @@ struct DetalleUsuarioView: View {
                     }
                     .buttonStyle(.glassProminent)
                     .disabled(cargando)
+                    Button("Ir a configuración"){
+                        let url  = URL(string: UIApplication.openSettingsURLString)
+                        UIApplication.shared.open(url!)
+                    }
                     
                     if cargando {
                         ProgressView("Obteniendo ubicación...")
