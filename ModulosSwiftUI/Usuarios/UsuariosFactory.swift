@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Factory del listado: resuelve dependencias, crea el ViewModel y lo inyecta
+/// en la vista. La fábrica de detalle permite construir el destino de navegación.
 @MainActor
 final class UsuariosFactory {
     

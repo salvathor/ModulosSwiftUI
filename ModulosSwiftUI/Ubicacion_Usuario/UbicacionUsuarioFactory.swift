@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Ensambla la pantalla del mapa inyectando el repositorio y LocationService.
+/// La vista no necesita crear ni configurar CLLocationManager.
 @MainActor
 final class UbicacionUsuarioFactory {
     

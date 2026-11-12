@@ -10,6 +10,8 @@ import Kingfisher
 
 struct UsuariosView: View {
     
+    // Conserva el ViewModel para la identidad de esta vista y observa sus cambios.
+    // Las acciones se delegan al ViewModel; la fábrica construye el detalle.
     @StateObject private var viewModel: UsuariosViewModel
     
     private let detalleFactory: DetalleUsuarioFactory

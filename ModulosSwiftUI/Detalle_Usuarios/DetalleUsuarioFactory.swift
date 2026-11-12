@@ -7,6 +7,8 @@
 
 import SwiftUI
 
+/// Ensambla el módulo de detalle con el ID seleccionado y el repositorio compartido.
+/// Entrega la fábrica de ubicación para construir la siguiente pantalla.
 @MainActor
 final class DetalleUsuarioFactory {
     

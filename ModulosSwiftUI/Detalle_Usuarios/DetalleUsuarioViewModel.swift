@@ -8,6 +8,9 @@
 import SwiftUI
 import Combine
 
+/// Carga el registro seleccionado a través del contrato del repositorio.
+/// @Published notifica el cambio a SwiftUI mediante ObservableObject (Combine).
+/// private(set) impide que la vista modifique directamente el usuario.
 @MainActor
 final class DetalleUsuarioViewModel: ObservableObject {
     

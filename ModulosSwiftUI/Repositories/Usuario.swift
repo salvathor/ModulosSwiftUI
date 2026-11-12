@@ -9,6 +9,8 @@ import SwiftUI
 
 //MARK: MODELO
 
+/// Modelo de datos. Identifiable proporciona identidad para las filas de SwiftUI;
+/// Hashable permite comparar y utilizar valores en colecciones que requieren hash.
 struct Usuario: Identifiable, Hashable{
     let id: Int
     let nombre: String
@@ -20,7 +22,9 @@ struct Usuario: Identifiable, Hashable{
     let latitud: Double
     let longitud: Double
     
-    // Propiedad calculada para MAPKIT
+    // CLLocationCoordinate2D es un tipo de Core Location con latitud y longitud
+    // en grados; MapKit también lo utiliza para ubicar marcadores y destinos.
+    // Estas coordenadas pertenecen al registro, no son la ubicación del dispositivo.
     var coordenada: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitud, longitude: longitud)
     }
@@ -29,6 +33,8 @@ struct Usuario: Identifiable, Hashable{
 
 //MARK: Abstraccion
 
+/// Patrón Repository: define cómo consultar usuarios sin exponer su almacenamiento.
+/// Actualmente las consultas son síncronas y el contenedor proporciona datos en memoria.
 protocol UsuarioRepository{
     func obtenerUsuarios() -> [Usuario]
     func obtenerUsuario(id:Int) -> Usuario
@@ -42,6 +48,7 @@ private var usuarios:[Usuario] = [
     Usuario(id: 3, nombre: "María", correo: "correo3@mail.com", telefono: "777777", imagen: "https://upload.wikimedia.org/wikipedia/commons/d/d6/Linux_mascot_tux.png", latitud: -13.1631, longitud: -72.5450)
 ]
 
+/// Implementación de ejemplo con datos fijos; no consulta una API ni una base de datos.
 final class MockUsuarioRepository: UsuarioRepository {
     
     func obtenerUsuario(id: Int) -> Usuario {

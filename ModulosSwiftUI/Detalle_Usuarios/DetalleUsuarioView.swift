@@ -13,6 +13,9 @@ struct DetalleUsuarioView: View {
     @State private var resultado = "Ubicacion no solicitada"
     @State private var cargando = false
     
+    // Ejemplo previo de acceso directo al servicio desde la vista: el botón que
+    // lo utiliza está comentado abajo. El flujo activo abre el módulo Ubicación,
+    // donde el servicio se inyecta en el ViewModel mediante su fábrica.
     private let locationService = CoreLocationService()
     
     @StateObject private var viewModel: DetalleUsuarioViewModel

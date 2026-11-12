@@ -8,6 +8,9 @@
 import SwiftUI
 import Combine
 
+/// Capa de presentación del listado: consulta el repositorio y ordena sus datos.
+/// ObservableObject y @Published pertenecen a Combine: notifican a la vista
+/// cuando cambia usuarios. MainActor aísla el estado utilizado por la interfaz.
 @MainActor
 final class UsuariosViewModel: ObservableObject {
     

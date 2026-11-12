@@ -10,13 +10,20 @@ import MapKit
 
 struct UbicacionUsuarioView: View {
     
+    // SwiftUI conserva este ObservableObject durante la identidad de la vista
+    // y observa los cambios publicados por Combine.
     @StateObject private var viewModel: UbicacionUsuarioViewModel
+    // La cámara es estado de presentación local. .automatic deja que MapKit
+    // determine inicialmente el encuadre de los elementos del mapa.
     @State private var cameraPosition: MapCameraPosition = .automatic
     
     init(viewModel: UbicacionUsuarioViewModel){
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
+    // MKCoordinateRegion combina centro y amplitud angular (span, en grados).
+    // Este encuadre sencillo usa los extremos; no contempla el cruce del
+    // antimeridiano ni garantiza incluir todas las curvas de una ruta.
     private func enfocarPuntos(){
         guard let usuario = viewModel.usuario else {
             return
@@ -43,6 +50,8 @@ struct UbicacionUsuarioView: View {
             longitude: ((destino.longitude + actual.longitude) / 2)
         )
         
+        // El factor 1.2 agrega un 20 % de margen a la separación de los puntos.
+        // Los deltas expresan grados de latitud/longitud, no kilómetros.
         //Calcular los valores delta
         let latDel = abs(destino.latitude - actual.latitude) * 1.2
         let lonDel = abs(destino.longitude - actual.longitude) * 1.2
@@ -64,6 +73,8 @@ struct UbicacionUsuarioView: View {
                 // Seccion Mapa
                 Text("Ubicación de \(usuario.nombre)")
                     .font(.title2.bold())
+                // El binding ($) permite mover la cámara desde el código y recibir
+                // los cambios causados por los gestos sobre el mapa.
                 Map(position:$cameraPosition){
                     // Marcador del usuario
                     Marker(
@@ -71,6 +82,8 @@ struct UbicacionUsuarioView: View {
                         coordinate: usuario.coordenada
                         )
                     .tint(.red)
+                    // Este Marker representa la última medición del servicio;
+                    // no obtiene la ubicación ni sigue al dispositivo por sí mismo.
                     // Marcador de mi ubicacion
                     if let ubicacion = viewModel.ubicacionActual {
                         Marker(
@@ -79,6 +92,7 @@ struct UbicacionUsuarioView: View {
                         )
                         .tint(.blue)
                     }
+                    // MapPolyline dibuja la geometría calculada por MKDirections.
                     // Dibujar Ruta
                     if let ruta = viewModel.ruta {
                         MapPolyline(ruta.polyline)
@@ -135,10 +149,12 @@ struct UbicacionUsuarioView: View {
                 
                 // Boton calcular ruta
                 Button("Calcular Ruta"){
+                    // Task permite invocar el método async desde la acción del botón.
                     Task{
                         await viewModel.calculaRuta()
                         //Ajustar la camara
                         if let ruta = viewModel.ruta {
+                            // El rectángulo del trazado encuadra la ruta completa.
                             cameraPosition = .rect(ruta.polyline.boundingMapRect)
                         }
                     }

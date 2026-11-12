@@ -10,9 +10,16 @@ import Combine
 import CoreLocation
 import MapKit
 
+/// ViewModel de ubicación: coordina datos, localización y cálculo de rutas.
+/// MainActor aísla los cambios de estado que consume la interfaz.
 @MainActor
 final class UbicacionUsuarioViewModel: ObservableObject {
     
+    // Combine: ObservableObject expone objectWillChange y @Published notifica
+    // antes de modificar estas propiedades. SwiftUI observa el objeto mediante
+    // @StateObject y vuelve a evaluar la vista cuando cambia su estado.
+    // private(set) permite leer desde la vista, pero reserva la escritura al ViewModel.
+    // Aquí no hay suscripciones sink ni AnyCancellable: SwiftUI observa por nosotros.
     @Published private(set) var usuario: Usuario?
     @Published private(set) var ubicacionActual: CLLocation?
     @Published private(set) var errorMessage: String?
@@ -41,6 +48,8 @@ final class UbicacionUsuarioViewModel: ObservableObject {
         cargando = true
         errorMessage = nil
         
+        // El servicio usa un callback, no un publisher de Combine. La captura
+        // débil evita que el closure retenido por el servicio retenga al ViewModel.
         locationService.solicitarUbicacion { [weak self] resultado in
             
             guard let self else {
@@ -62,6 +71,9 @@ final class UbicacionUsuarioViewModel: ObservableObject {
     
     // Calcular distancia
     
+    // Propiedad derivada: no necesita @Published porque depende de propiedades
+    // publicadas. CLLocation.distance devuelve metros de distancia geográfica
+    // entre puntos sobre la Tierra, sin seguir calles; se convierten a kilómetros.
     var distanciaKilometros: Double? {
         
         guard
@@ -92,6 +104,9 @@ final class UbicacionUsuarioViewModel: ObservableObject {
             return
         }
         
+        // MKMapItem representa un lugar para MapKit; MKPlacemark lo construye
+        // a partir de coordenadas. El origen es el dispositivo y el destino es
+        // la ubicación almacenada del usuario seleccionado.
         // Origen
         let origen = MKMapItem(
             placemark: MKPlacemark(
@@ -106,6 +121,7 @@ final class UbicacionUsuarioViewModel: ObservableObject {
             )
         )
         
+        // La petición define los extremos y el transporte (.automobile: automóvil).
         // Solicitud
         let request = MKDirections.Request()
         request.source = origen
@@ -117,8 +133,14 @@ final class UbicacionUsuarioViewModel: ObservableObject {
             
         // Solicitar ruta a MapKit
         do {
+            // MapKit consulta su servicio de rutas: puede fallar por conectividad
+            // o falta de una ruta disponible. await suspende esta tarea sin bloquear
+            // la interfaz; al continuar, el estado sigue aislado en MainActor.
             let response = try await directions.calculate()
             
+            // MKRoute incluye polyline (trazado), distance (metros),
+            // expectedTravelTime (segundos) y steps (indicaciones).
+            // La distancia de ruta sí sigue el recorrido, a diferencia de distance(from:).
             // Obtener primera ruta
             ruta = response.routes.first
             
