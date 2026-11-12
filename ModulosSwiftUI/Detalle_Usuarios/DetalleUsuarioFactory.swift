@@ -12,8 +12,12 @@ final class DetalleUsuarioFactory {
     
     private let container: DIContainer
     
-    init(container: DIContainer){
+    // Nueva dependencia de ubicacion
+    private let ubicacionFactory: UbicacionUsuarioFactory
+    
+    init(container: DIContainer, ubicacionFactory: UbicacionUsuarioFactory){
         self.container = container
+        self.ubicacionFactory = ubicacionFactory
     }
     
     func makeDetalleUsuarioView(idUsuario: Int) -> DetalleUsuarioView {
@@ -24,7 +28,7 @@ final class DetalleUsuarioFactory {
         let viewModel = DetalleUsuarioViewModel(repository: repository, idUsuario: idUsuario)
         
         // 3. Construir y devolver la View
-        return DetalleUsuarioView(viewModel: viewModel)
+        return DetalleUsuarioView(viewModel: viewModel, ubicacionFactory: ubicacionFactory)
         
     }
     

@@ -72,7 +72,7 @@ extension CoreLocationService:CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         
-        guard var ubicacion = locations.last else {
+        guard let ubicacion = locations.last else {
             return
         }
         

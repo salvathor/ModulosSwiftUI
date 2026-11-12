@@ -18,12 +18,16 @@ struct ModulosSwiftUIApp: App {
         // 1. Crear DIContainer
         let container = DIContainer()
         
-        // 2.1 Crear Factory Detalle
-        let detalleFactory = DetalleUsuarioFactory(container: container)
+        // 1.3 Crear Factory Ubicacion
+        let ubicacionFactory = UbicacionUsuarioFactory(container: container)
         
+        // 1.2 Crear Factory Detalle
+        let detalleFactory = DetalleUsuarioFactory(container: container, ubicacionFactory: ubicacionFactory)
+        
+        // 1.1 Fabrica de los usuarios
         self.usuariosFactory = UsuariosFactory(
-            container: container, detalleUsuarioFactory: detalleFactory
-        )
+            container: container, detalleUsuarioFactory: detalleFactory)
+        
     }
     
     var body: some Scene {

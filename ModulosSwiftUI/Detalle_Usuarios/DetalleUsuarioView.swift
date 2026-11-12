@@ -17,8 +17,12 @@ struct DetalleUsuarioView: View {
     
     @StateObject private var viewModel: DetalleUsuarioViewModel
     
-    init(viewModel: DetalleUsuarioViewModel){
+    private let ubicacionFactory: UbicacionUsuarioFactory
+    
+    init(viewModel: DetalleUsuarioViewModel,
+    ubicacionFactory: UbicacionUsuarioFactory){
         _viewModel = StateObject(wrappedValue: viewModel)
+        self.ubicacionFactory = ubicacionFactory
     }
     
     var body: some View {
@@ -35,7 +39,17 @@ struct DetalleUsuarioView: View {
                         .font(.largeTitle.bold())
                     LabeledContent("Correo", value: usuario.correo)
                     LabeledContent("Telefono", value: usuario.telefono)
-                    Text("Prueba de CoreLocation")
+                    NavigationLink{
+                        ubicacionFactory.makeUbicacionView(usuarioId: usuario.id)
+                    } label: {
+                        Label(
+                            "Ver ubicación de \(usuario.nombre)",
+                            systemImage: "map.fill"
+                        )
+                    }
+                    .buttonStyle(.bordered)
+                    Spacer()
+                    Text("Mi ubicación actual")
                         .font(.title)
                         .bold()
                     Text(resultado)
