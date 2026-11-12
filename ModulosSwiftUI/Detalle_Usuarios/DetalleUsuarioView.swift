@@ -49,7 +49,7 @@ struct DetalleUsuarioView: View {
                     }
                     .buttonStyle(.bordered)
                     Spacer()
-                    Text("Mi ubicación actual")
+                    /*Text("Mi ubicación actual")
                         .font(.title)
                         .bold()
                     Text(resultado)
@@ -67,7 +67,7 @@ struct DetalleUsuarioView: View {
                     
                     if cargando {
                         ProgressView("Obteniendo ubicación...")
-                    }
+                    }*/
                     
                     Spacer()
                 }
