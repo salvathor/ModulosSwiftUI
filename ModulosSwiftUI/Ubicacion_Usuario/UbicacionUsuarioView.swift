@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 struct UbicacionUsuarioView: View {
     
@@ -20,6 +21,15 @@ struct UbicacionUsuarioView: View {
             if let usuario = viewModel.usuario {
                 Text("Ubicación de \(usuario.nombre)")
                     .font(.title2.bold())
+                Map{
+                    Marker(
+                        usuario.nombre,
+                        coordinate: usuario.coordenada
+                        )
+                    .tint(.red)
+                }
+                .frame(height: 350)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
                 
             } else {
                 Text("Usuario no encontrado")
