@@ -79,6 +79,11 @@ struct UbicacionUsuarioView: View {
                         )
                         .tint(.blue)
                     }
+                    // Dibujar Ruta
+                    if let ruta = viewModel.ruta {
+                        MapPolyline(ruta.polyline)
+                            .stroke(.blue, lineWidth: 4)
+                    }
                 }
                 .frame(height: 350)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -92,6 +97,14 @@ struct UbicacionUsuarioView: View {
                 }
                 .onChange(of: viewModel.distanciaKilometros) { _ in
                     enfocarPuntos()
+                }
+                
+                if let ruta = viewModel.ruta {
+                    VStack(spacing:8){
+                        Text("Distancia por carretera: " + String(format: "%.2f km", ruta.distance / 1000))
+                        Text("Tiempo estimado: " + String(format: "%.0f min.", ruta.expectedTravelTime / 60))
+                    }
+                    .font(.headline)
                 }
                 
                 // Mostrar distancia entre los dos puntos.
@@ -119,6 +132,19 @@ struct UbicacionUsuarioView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(viewModel.cargando)
+                
+                // Boton calcular ruta
+                Button("Calcular Ruta"){
+                    Task{
+                        await viewModel.calculaRuta()
+                        //Ajustar la camara
+                        if let ruta = viewModel.ruta {
+                            cameraPosition = .rect(ruta.polyline.boundingMapRect)
+                        }
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(viewModel.ubicacionActual == nil)
                 
                 // Mostrar error de CLLocation
                 if let error = viewModel.errorMessage {
