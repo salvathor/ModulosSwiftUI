@@ -29,6 +29,7 @@ struct UsuariosView: View {
                 } label: {
                     Label(usuario.nombre, systemImage: "person.circle")
                 }
+                
                 //Text(usuario.nombre)
             }
             .navigationTitle("Usuarios")
